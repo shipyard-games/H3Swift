@@ -1,0 +1,4 @@
+module h3lib {
+    header "h3api.h"
+    export *
+}
