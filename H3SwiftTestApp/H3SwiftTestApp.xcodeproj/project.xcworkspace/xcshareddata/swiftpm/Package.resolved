@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "H3Swift",
+        "repositoryURL": "/Users/tsharju/Code/H3Swift",
+        "state": {
+          "branch": "master",
+          "revision": "a2c15961e9ffe8bb20ddbbd7e25f6e8763506ca5",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

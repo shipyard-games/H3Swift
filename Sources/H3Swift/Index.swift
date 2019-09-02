@@ -1,4 +1,10 @@
-import Foundation
+//
+//  Index.swift
+//  H3Swift
+//
+//  Created by Teemu Harju on 31.8.2019.
+//  Copyright © 2019 Shipyard Games Oy. All rights reserved.
+//
 
 import h3lib
 
@@ -6,33 +12,25 @@ extension H3.Index {
 
     // MARK: Indexing functions
     
-    public var hex: String {
+    public var hexString: String {
         return String(format: "%#llx", self)
-    }
-
-    /**
-     Indexes the location at the specified resolution, returning the index of the cell containing the location.
-
-     Returns 0 on error.
-     */
-    public static func geoToH3(_ geoCoord: H3.GeoCoord, resolution: Int32) -> H3.Index {
-        var geoCoord = geoCoord
-        return h3lib.geoToH3(&geoCoord, resolution)
     }
 
     /**
      Finds the centroid of the index.
      */
-    public func h3ToGeo() -> H3.GeoCoord {
+    public func toGeo() -> H3.GeoCoord {
         var geoCoord = H3.GeoCoord()
         h3lib.h3ToGeo(self, &geoCoord)
+        geoCoord.lat = h3lib.radsToDegs(geoCoord.lat)
+        geoCoord.lon = h3lib.radsToDegs(geoCoord.lon)
         return geoCoord
     }
     
     /**
      Finds the boundary of the index.
      */
-    public func h3ToGeoBoundary() -> H3.GeoBoundary {
+    public func toGeoBoundary() -> H3.GeoBoundary {
         var geoBoundary = H3.GeoBoundary()
         h3lib.h3ToGeoBoundary(self, &geoBoundary)
         return geoBoundary
@@ -43,14 +41,14 @@ extension H3.Index {
     /**
      Returns the resolution of the index.
      */
-    public func h3GetResolution() -> Int32 {
+    public var resolution: Int32 {
         return h3lib.h3GetResolution(self)
     }
     
     /**
      Returns the base cell number of the index.
      */
-    public func h3GetBaseCell() -> Int32 {
+    public var baseCell: Int32 {
         return h3lib.h3GetBaseCell(self)
     }
     
@@ -79,35 +77,68 @@ extension H3.Index {
     public static func maxKringSize(_ k: Int32) -> Int32 {
         return h3lib.maxKringSize(k)
     }
+    
+    public func toParent(resolution: Int32) -> H3.Index {
+        return h3lib.h3ToParent(self, resolution)
+    }
 }
 
 extension H3.Index: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        return self.hex
+        return self.hexString
     }
 }
-
-#if canImport(CoreLocation)
-import CoreLocation
-
-extension H3.Index {
-    public func h3ToCLLocation() -> CLLocation {
-        let geoCoord = self.h3ToGeo()
-        return CLLocation(latitude: geoCoord.lat, longitude: geoCoord.lon)
-    }
-}
-
-#endif
 
 #if canImport(MapKit)
 import MapKit
 
 extension H3.Index {
+    
     public func h3ToMKPolygon() -> MKPolygon {
-        let boundary = self.h3ToGeoBoundary()
+        let boundary = self.toGeoBoundary()
         let points = boundary.mapPoints
         return MKPolygon(points: points, count: points.count)
     }
+    
+    public func boundingMapRect() -> MKMapRect {
+        let geoBoundary = self.toGeoBoundary()
+        let geoFence = H3.Geofence(verts: geoBoundary.vertices)
+        let bbox = geoFence.bbox
+        
+        let nwPoint = MKMapPoint(CLLocationCoordinate2D(latitude: bbox.north, longitude: bbox.west))
+        let sePoint = MKMapPoint(CLLocationCoordinate2D(latitude: bbox.south, longitude: bbox.east))
+        
+        return MKMapRect(x: fmin(nwPoint.x, sePoint.x), y: fmin(nwPoint.y, sePoint.y),
+                         width: fabs(nwPoint.x - sePoint.x), height: fabs(nwPoint.y - sePoint.y))
+    }
+}
+
+public class H3Cell: NSObject, MKOverlay {
+    
+    public let coordinate: CLLocationCoordinate2D
+    public let boundingMapRect: MKMapRect
+    public let index: H3.Index
+    
+    public init(withIndex index: H3.Index) {
+        self.index = index
+        self.coordinate = index.toGeo().location.coordinate
+        self.boundingMapRect = index.boundingMapRect()
+    }
+}
+
+public class H3CellOverlayView: MKPolygonRenderer {
+    
+    public let index: H3.Index
+    
+    public init(withIndex index: H3.Index) {
+        self.index = index
+        
+        var points = index.toGeoBoundary().mapPoints
+        let overlay = MKPolygon(points: &points, count: points.count)
+        
+        super.init(overlay: overlay)
+    }
 }
 #endif
+
