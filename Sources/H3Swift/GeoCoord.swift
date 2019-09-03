@@ -10,6 +10,10 @@ import h3lib
 
 extension H3.GeoCoord {
     
+    public init(latDegs: Double, lonDegs: Double) {
+        self.init(lat: h3lib.degsToRads(latDegs), lon: h3lib.degsToRads(lonDegs))
+    }
+    
     /**
      Indexes the location at the specified resolution, returning the index of the cell containing the location.
      
@@ -17,9 +21,6 @@ extension H3.GeoCoord {
      */
     public func toH3(resolution: Int32) -> H3.Index {
         var geoCoord = self
-        geoCoord.lat = h3lib.degsToRads(geoCoord.lat)
-        geoCoord.lon = h3lib.degsToRads(geoCoord.lon)
-        
         return h3lib.geoToH3(&geoCoord, resolution)
     }
 }

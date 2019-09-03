@@ -8,6 +8,7 @@
 
 #if canImport(CoreLocation)
 import CoreLocation
+import h3lib
 
 extension CLLocation {
    
@@ -19,25 +20,26 @@ extension CLLocation {
 extension CLLocationCoordinate2D {
     
     public func toH3(resolution: Int32) -> H3.Index {
-        let geoCoord = H3.GeoCoord(lat: self.latitude, lon: self.longitude)
+        let geoCoord = H3.GeoCoord(latDegs: self.latitude, lonDegs: self.longitude)
         return geoCoord.toH3(resolution: resolution)
     }
     
     public func toH3GeoCoord() -> H3.GeoCoord {
-         return H3.GeoCoord(lat: latitude, lon: longitude)
+         return H3.GeoCoord(latDegs: latitude, lonDegs: longitude)
      }
 }
 
 extension H3.Index {
     
     public func toCLLocation() -> CLLocation {
-        let geoCoord = self.toGeo()
-        return CLLocation(latitude: geoCoord.lat, longitude: geoCoord.lon)
+        let coordinate = self.toCLLocationCoordinate2D()
+        return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
     
     public func toCLLocationCoordinate2D() -> CLLocationCoordinate2D {
         let geoCoord = self.toGeo()
-        return CLLocationCoordinate2D(latitude: geoCoord.lat, longitude: geoCoord.lon)
+        return CLLocationCoordinate2D(latitude: h3lib.radsToDegs(geoCoord.lat),
+                                      longitude: h3lib.radsToDegs(geoCoord.lon))
     }
 }
 #endif

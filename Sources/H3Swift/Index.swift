@@ -22,8 +22,6 @@ extension H3.Index {
     public func toGeo() -> H3.GeoCoord {
         var geoCoord = H3.GeoCoord()
         h3lib.h3ToGeo(self, &geoCoord)
-        geoCoord.lat = h3lib.radsToDegs(geoCoord.lat)
-        geoCoord.lon = h3lib.radsToDegs(geoCoord.lon)
         return geoCoord
     }
     
@@ -103,7 +101,7 @@ extension H3.Index {
     
     public func boundingMapRect() -> MKMapRect {
         let geoBoundary = self.toGeoBoundary()
-        let geoFence = H3.Geofence(verts: geoBoundary.vertices)
+        let geoFence = H3.Geofence(vertices: geoBoundary.vertices)
         let bbox = geoFence.bbox
         
         let nwPoint = MKMapPoint(CLLocationCoordinate2D(latitude: bbox.north, longitude: bbox.west))

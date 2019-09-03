@@ -22,20 +22,20 @@ class ViewController: NSViewController, MKMapViewDelegate {
 
         mapView.delegate = self
         
-        let centerIndex = center.toH3GeoCoord().toH3(resolution: 10)
+        let centerIndex = center.toH3GeoCoord().toH3(resolution: 11)
         let neighborIndices = centerIndex.kRing(k: 10)
         
         for neighborIndex in neighborIndices {
             mapView.insertOverlay(H3Cell(withIndex: neighborIndex), at: 0)
         }
         
-        let parentIndex = centerIndex.toParent(resolution: 9)
+        let parentIndex = centerIndex.toParent(resolution: 10)
         let parentNeighborIndices = parentIndex.kRing(k: 10)
         for parentNeighborIndex in parentNeighborIndices {
             mapView.insertOverlay(H3Cell(withIndex: parentNeighborIndex), at: 0)
         }
         
-        let grandparentIndex = centerIndex.toParent(resolution: 8)
+        let grandparentIndex = centerIndex.toParent(resolution: 9)
         let grandparentNeighborIndices = grandparentIndex.kRing(k: 10)
         for grandparentNeighborIndex in grandparentNeighborIndices {
             mapView.insertOverlay(H3Cell(withIndex: grandparentNeighborIndex), at: 0)
@@ -77,11 +77,11 @@ class ViewController: NSViewController, MKMapViewDelegate {
     
     private func strokeColor(forResolution resolution: Int32) -> NSColor {
         switch resolution {
-        case 10:
+        case 11:
             return .red
-        case 9:
+        case 10:
             return .green
-        case 8:
+        case 9:
             return .blue
         default:
             fatalError()
@@ -90,11 +90,11 @@ class ViewController: NSViewController, MKMapViewDelegate {
     
     private func lineWidth(forResolution resolution: Int32) -> CGFloat {
         switch resolution {
+        case 11:
+            return 4.0
         case 10:
             return 4.0
         case 9:
-            return 4.0
-        case 8:
             return 4.0
         default:
             fatalError()
