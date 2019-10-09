@@ -79,6 +79,24 @@ extension H3.Index {
     public func toParent(resolution: Int32) -> H3.Index {
         return h3lib.h3ToParent(self, resolution)
     }
+    
+    public func toChildren(resolution: Int32) -> [H3.Index] {
+        if self.resolution >= resolution {
+            return []
+        }
+        
+        let resolutionSteps = resolution - self.resolution
+        let childCount = Int(resolutionSteps * 7)
+        
+        let indicesPtr = UnsafeMutablePointer<H3.Index>.allocate(capacity: childCount)
+        h3lib.h3ToChildren(self, resolution, indicesPtr)
+        
+        let indices = Array(UnsafeMutableBufferPointer(start: indicesPtr, count: childCount))
+        
+        indicesPtr.deallocate()
+        
+        return indices
+    }
 }
 
 extension H3.Index: CustomDebugStringConvertible {

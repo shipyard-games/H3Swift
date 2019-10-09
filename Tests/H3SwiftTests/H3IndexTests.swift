@@ -44,6 +44,21 @@ final class H3IndexTests: XCTestCase {
         XCTAssertEqual(geoCoord4.toH3(resolution: 15).hexString, "0x8f76a1cc64caa8a")
     }
     
+    func testToParentToChildren() {
+        let geoCoord = H3.GeoCoord(lat: 40.72057966485312, lon: -74.09152905917784)
+        let index = geoCoord.toH3(resolution: 10)
+        
+        let parent = index.toParent(resolution: 9)
+        XCTAssertEqual(parent.hexString, "0x896cb63a327ffff")
+        
+        let children = parent.toChildren(resolution: 10)
+        XCTAssertEqual(children.count, 7)
+        XCTAssertTrue(children.contains(index))
+        
+        XCTAssertEqual(parent.toChildren(resolution: 9).count, 0)
+        XCTAssertEqual(parent.toChildren(resolution: 8).count, 0)
+    }
+    
     static var allTests = [
         ("testGeoCoordToIndex", testGeoCoordToIndex),
         ("testIndexToGeoCoord", testIndexToGeoCoord),
