@@ -10,10 +10,17 @@ import h3lib
 
 extension H3.Index {
 
-    // MARK: Indexing functions
-    
     public var hexString: String {
         return String(format: "%#llx", self)
+    }
+    
+    public static func from(string: String) -> H3.Index? {
+        let scanner = Scanner(string: string)
+        var h3Index: UInt64 = 0
+        if scanner.scanHexInt64(&h3Index) {
+            return h3Index
+        }
+        return nil
     }
 
     /**

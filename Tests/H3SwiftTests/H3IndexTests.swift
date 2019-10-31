@@ -59,6 +59,13 @@ final class H3IndexTests: XCTestCase {
         XCTAssertEqual(parent.toChildren(resolution: 8).count, 0)
     }
     
+    func testIndexFromString() {
+        let h3String = "0x8aa8a0634027fff"
+        let h3Index = H3.Index.from(string: h3String)!
+        
+        XCTAssertEqual(h3String, h3Index.hexString)
+    }
+    
     static var allTests = [
         ("testGeoCoordToIndex", testGeoCoordToIndex),
         ("testIndexToGeoCoord", testIndexToGeoCoord),
