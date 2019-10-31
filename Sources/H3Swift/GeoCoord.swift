@@ -44,7 +44,7 @@ import CoreLocation
 extension H3.GeoCoord {
     
     public var location: CLLocation {
-        return CLLocation(latitude: lat, longitude: lon)
+        return CLLocation(latitude: radsToDegs(lat), longitude: radsToDegs(lon))
     }
 }
 #endif
