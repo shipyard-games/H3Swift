@@ -66,6 +66,23 @@ final class H3IndexTests: XCTestCase {
         XCTAssertEqual(h3String, h3Index.hexString)
     }
     
+    func testLine() {
+        let start: H3.Index = 0x8a08866032cffff
+        let end: H3.Index = 0x8a088661d467fff
+        
+        let line = start.line(to: end)
+        
+        XCTAssertTrue(line.count != 0)
+        
+        let correctLine: [UInt64] = [
+            0x8a08866032cffff, 0x8a088661d967fff, 0x8a088661d977fff, 0x8a088661d957fff, 0x8a088661d82ffff,
+            0x8a088661d807fff, 0x8a088661d81ffff, 0x8a088661d8f7fff, 0x8a088661d88ffff, 0x8a088661d127fff,
+            0x8a088661d137fff, 0x8a088661d117fff, 0x8a088661d1affff, 0x8a088661d187fff, 0x8a088661d19ffff,
+            0x8a088661d0b7fff, 0x8a088661d54ffff, 0x8a088661d467fff]
+        
+        XCTAssertEqual(line, correctLine)
+    }
+    
     static var allTests = [
         ("testGeoCoordToIndex", testGeoCoordToIndex),
         ("testIndexToGeoCoord", testIndexToGeoCoord),
