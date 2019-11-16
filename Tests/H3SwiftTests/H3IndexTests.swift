@@ -77,6 +77,9 @@ final class H3IndexTests: XCTestCase {
         
         XCTAssertTrue(line.count != 0)
         
+        XCTAssertEqual(line.first!, start)
+        XCTAssertEqual(line.last!, end)
+        
         let correctLine: [UInt64] = [
             0x8a08866032cffff, 0x8a088661d967fff, 0x8a088661d977fff, 0x8a088661d957fff, 0x8a088661d82ffff,
             0x8a088661d807fff, 0x8a088661d81ffff, 0x8a088661d8f7fff, 0x8a088661d88ffff, 0x8a088661d127fff,
