@@ -108,6 +108,8 @@ extension H3.Index {
     public func line(to index: H3.Index) -> [H3.Index] {
         let maxIndices = Int(h3lib.h3LineSize(self, index))
         
+        guard maxIndices >= 0 else { return [] }
+        
         let indicesPtr = UnsafeMutablePointer<H3.Index>.allocate(capacity: maxIndices)
         h3lib.h3Line(self, index, indicesPtr)
         
